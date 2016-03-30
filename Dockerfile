@@ -20,5 +20,11 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
 
 COPY jenkins-slave /bin/jenkins-slave
 RUN chmod +x /bin/jenkins-slave
+RUN mkdir ~/.ssh
+RUN mkdir /home/jenkins/.ssh/
+RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
+RUN ssh-keyscan github.com >> /home/jenkins/.ssh/known_hosts
+RUN ssh-keyscan heroku.com >> ~/.ssh/known_hosts
+RUN ssh-keyscan heroku.com >> /home/jenkins/.ssh/known_hosts
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
