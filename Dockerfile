@@ -36,9 +36,25 @@ RUN yum install -y wget
 #Install which 
 RUN yum install -y which 
 
-ADD install_heroku.sh install_heroku.sh
-RUN chmod +x install_heroku.sh
-RUN ./install_heroku.sh
+#install sudo
+RUN yum install -y sudo 
+
+#Add jenkins to sudoers
+RUN echo 'jenkins ALL=(ALL:ALL) ALL' >> /etc/sudoers
+#disable tty or sudo wont work 
+RUN sed -i "s/requiretty/!requiretty/g" /etc/sudoers
+
+#isntall RVM
+RUN gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+RUN sudo \curl -sSL https://get.rvm.io | bash -s stable --ruby
+
+#install Heroku toolbelt
+RUN sudo wget -qO- https://toolbelt.heroku.com/install.sh | sh 
+
+#install apachae maven 3.2
+RUN wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+RUN sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+RUN yum -y install -y apache-maven-3.2.5-1.el6
 
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
