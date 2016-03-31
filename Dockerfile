@@ -18,13 +18,27 @@ RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pa
     && /usr/bin/ssh-keygen -A \
     && echo export JAVA_HOME="/`alternatives  --display java | grep best | cut -d "/" -f 2-6`" >> /etc/environment
 
+#Copy Jenkins exec for JNLP
 COPY jenkins-slave /bin/jenkins-slave
 RUN chmod +x /bin/jenkins-slave
+
+#Create .ssh folder and add known hosts
 RUN mkdir ~/.ssh
 RUN mkdir /home/jenkins/.ssh/
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /home/jenkins/.ssh/known_hosts
 RUN ssh-keyscan heroku.com >> ~/.ssh/known_hosts
 RUN ssh-keyscan heroku.com >> /home/jenkins/.ssh/known_hosts
+
+#install wget
+RUN yum install -y wget 
+
+#Install which 
+RUN yum install -y which 
+
+ADD install_heroku.sh install_heroku.sh
+RUN chmod +x install_heroku.sh
+RUN ./install_heroku.sh
+
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
