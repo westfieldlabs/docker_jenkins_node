@@ -56,5 +56,18 @@ RUN wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-mave
 RUN sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
 RUN yum -y install -y apache-maven-3.2.5-1.el6
 
+#install redis 
+RUN wget -r --no-parent -A 'epel-release-*.rpm' http://dl.fedoraproject.org/pub/epel/7/x86_64/e/
+RUN rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-*.rpm
+RUN yum install -y redis
+
+#install default rvm versions. 
+RUN /usr/local/rvm/bin/rvm install 2.2.3
+RUN /usr/local/rvm/bin/rvm install 2.2.2
+RUN /usr/local/rvm/bin/rvm install 2.2.1
+RUN /usr/local/rvm/bin/rvm install 2.3.0
+RUN /usr/local/rvm/bin/rvm install 2.1.0
+
+
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
