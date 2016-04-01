@@ -1,15 +1,16 @@
 FROM centos:7
-MAINTAINER "Mitch Eaton" 
+MAINTAINER "Mitch Eaton & Jeremy Shapiro" 
 
 WORKDIR /opt/
 
+RUN rpm -iUvh http://yum.postgresql.org/9.3/redhat/rhel-7-x86_64/pgdg-centos93-9.3-1.noarch.rpm
 RUN yum update -y
 RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar http://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/2.52/remoting-2.52.jar \
   && chmod 755 /usr/share/jenkins \
   && chmod 644 /usr/share/jenkins/slave.jar
 
 # Install a basic SSH server GIT, UNZIP, LSOF and JDK 8
-RUN yum install -y openssh-server git unzip lsof java-1.8.0-openjdk-headless && yum clean all
+RUN yum install -y openssh-server git unzip lsof java-1.8.0-openjdk-headless postgresql93 postgresql93-server postgresql93-contrib postgresql93-libs && yum clean all
 # update sshd settings, create jenkins user, set jenkins user pw, generate ssh keys
 RUN sed -i 's|session    required     pam_loginuid.so|session    optional     pam_loginuid.so|g' /etc/pam.d/sshd \
     && mkdir -p /var/run/sshd \
@@ -40,7 +41,7 @@ RUN yum install -y which
 RUN yum install -y sudo 
 
 #Add jenkins to sudoers
-RUN echo 'jenkins ALL=(ALL:ALL) ALL' >> /etc/sudoers
+RUN echo 'jenkins ALL = (ALL) NOPASSWD:ALL' >> /etc/sudoers
 #disable tty or sudo wont work 
 RUN sed -i "s/requiretty/!requiretty/g" /etc/sudoers
 
@@ -68,9 +69,9 @@ RUN /usr/local/rvm/bin/rvm install 2.2.1
 RUN /usr/local/rvm/bin/rvm install 2.3.0
 RUN /usr/local/rvm/bin/rvm install 2.1.0
 
-
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
+
 
 
 

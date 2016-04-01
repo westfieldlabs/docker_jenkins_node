@@ -27,6 +27,9 @@
 # * JENKINS_TUNNEL : HOST:PORT for a tunnel to route TCP traffic to jenkins host, when jenkins can't be directly accessed over network
 # * JENKINS_URL : alternate jenkins URL
 
+#start postgres
+runuser -l postgres --session-command "/usr/pgsql-9.3/bin/pg_ctl init"
+runuser -l postgres --session-command "/usr/pgsql-9.3/bin/pg_ctl -D /var/lib/pgsql/9.3/data -l logfile start"
 #start redis 
 redis-server --daemonize yes
 
