@@ -30,6 +30,9 @@
 #start redis 
 redis-server --daemonize yes
 
+#start postgres
+# /usr/sbin/init
+
 #start jenkins daemon 
 if [[ $# -eq 1 ]]; then
 

@@ -71,3 +71,7 @@ RUN /usr/local/rvm/bin/rvm install 2.1.0
 
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
+
+
+
+
