@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #start postgres
-runuser -l postgres --session-command "/usr/pgsql-9.3/bin/pg_ctl init"
+rm -rf /var/lib/pgsql/9.3/data/postmaster.pid
 runuser -l postgres --session-command "/usr/pgsql-9.3/bin/pg_ctl -D /var/lib/pgsql/9.3/data -l logfile start"
 
 #start redis 

@@ -55,11 +55,7 @@ RUN yum -y install -y apache-maven-3.2.5-1.el6
 #install redis 
 RUN wget -r --no-parent -A 'epel-release-*.rpm' http://dl.fedoraproject.org/pub/epel/7/x86_64/e/
 RUN rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-*.rpm
-RUN yum install -y redis
-
-#Copy Jenkins exec for JNLP
-COPY jenkins-slave /bin/jenkins-slave
-RUN chmod +x /bin/jenkins-slave
+RUN yum install -y redis nodejs
 
 #Create .ssh folder and add known hosts
 RUN mkdir ~/.ssh
@@ -68,6 +64,16 @@ RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN ssh-keyscan github.com >> /home/jenkins/.ssh/known_hosts
 RUN ssh-keyscan heroku.com >> ~/.ssh/known_hosts
 RUN ssh-keyscan heroku.com >> /home/jenkins/.ssh/known_hosts
+
+ADD utf8.sql utf8.sql
+ADD modify_pg.sh modify_pg.sh
+RUN chmod +x /opt/modify_pg.sh
+RUN /opt/modify_pg.sh
+RUN touch docker_runtime
+
+#Copy Jenkins exec for JNLP
+COPY jenkins-slave /bin/jenkins-slave
+RUN chmod +x /bin/jenkins-slave
 
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
