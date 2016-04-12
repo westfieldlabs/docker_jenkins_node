@@ -75,6 +75,9 @@ RUN touch docker_runtime
 COPY jenkins-slave /bin/jenkins-slave
 RUN chmod +x /bin/jenkins-slave
 
+RUN rm -rf /usr/bin/pg_dump
+RUN ln -s /usr/pgsql-9.3/bin/pg_dump /usr/bin/pg_dump
+
 EXPOSE 22
 ENTRYPOINT ["jenkins-slave"]
 
