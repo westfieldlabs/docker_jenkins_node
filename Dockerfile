@@ -1,13 +1,10 @@
 FROM centos:7
-MAINTAINER "Mitch Eaton & Jeremy Shapiro" 
+MAINTAINER "Jeremy Shapiro" 
 
 WORKDIR /opt/
 
-RUN rpm -iUvh http://yum.postgresql.org/9.3/redhat/rhel-7-x86_64/pgdg-centos93-9.3-1.noarch.rpm
+RUN rpm -iUvh http://download.postgresql.org/pub/repos/yum/9.3/redhat/rhel-7-x86_64/pgdg-centos93-9.3-2.noarch.rpm
 RUN yum update -y
-RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar http://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/2.52/remoting-2.52.jar \
-  && chmod 755 /usr/share/jenkins \
-  && chmod 644 /usr/share/jenkins/slave.jar
 
 # Install a basic SSH server GIT, UNZIP, LSOF and JDK 8
 RUN yum install -y openssh-server \
@@ -65,21 +62,27 @@ RUN ssh-keyscan github.com >> /home/jenkins/.ssh/known_hosts
 RUN ssh-keyscan heroku.com >> ~/.ssh/known_hosts
 RUN ssh-keyscan heroku.com >> /home/jenkins/.ssh/known_hosts
 
+# chown to jenkins
+RUN chown jenkins:jenkins  /home/jenkins/.ssh/known_hosts
+RUN chown -R jenkins:jenkins /usr/local
+
+# modify postgres
 ADD utf8.sql utf8.sql
 ADD modify_pg.sh modify_pg.sh
 RUN chmod +x /opt/modify_pg.sh
 RUN /opt/modify_pg.sh
 RUN touch docker_runtime
 
-#Copy Jenkins exec for JNLP
-COPY jenkins-slave /bin/jenkins-slave
-RUN chmod +x /bin/jenkins-slave
+#Copy entry script
+COPY entry.sh /bin/entry.sh
+RUN chmod +x /bin/entry.sh
 
 RUN rm -rf /usr/bin/pg_dump
 RUN ln -s /usr/pgsql-9.3/bin/pg_dump /usr/bin/pg_dump
 
 EXPOSE 22
-ENTRYPOINT ["jenkins-slave"]
+
+ENTRYPOINT ["entry.sh"]
 
 
 
