@@ -89,7 +89,7 @@ RUN ln -s /usr/pgsql-9.3/bin/pg_dump /usr/bin/pg_dump
 
 EXPOSE 22
 
-#ENTRYPOINT ["entry.sh"]
+ENTRYPOINT ["entry.sh"]
 
 
 
